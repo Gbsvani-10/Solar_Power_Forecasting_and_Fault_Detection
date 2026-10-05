@@ -1,1 +1,207 @@
+# Solar Power Forecasting and Inverter Fault Detection
+
+A machine learning and deep learning project for **solar power prediction, plant-level forecasting, inverter fault detection, and anomaly detection** using photovoltaic plant generation and weather data.
+
+## 📌 Project Overview
+
+This project uses solar generation and weather sensor data from **two solar plants in India**. The workflow combines supervised learning, time-series forecasting, model transfer, and unsupervised anomaly detection.
+
+### Main Objectives
+
+* Predict inverter-level AC power from weather conditions.
+* Identify under-performing inverters using prediction errors.
+* Compare the worst inverter with the plant median.
+* Forecast plant-level AC power one hour ahead.
+* Compare LSTM forecasting with a persistence baseline.
+* Test whether a Plant 1 model transfers to Plant 2.
+* Detect inverter anomalies using an Autoencoder.
+
+## 📊 Dataset
+
+The dataset contains approximately **34 days of 15-minute interval data** from two solar plants.
+
+Each plant contains:
+
+* Generation data
+* Weather sensor data
+* Multiple inverter measurements
+
+### Important Features
+
+* `IRRADIATION`
+* `MODULE_TEMPERATURE`
+* `AMBIENT_TEMPERATURE`
+* `AC_POWER`
+* `DC_POWER`
+* `SOURCE_KEY`
+* `DATE_TIME`
+
+## 🔧 Technologies Used
+
+* Python
+* Pandas
+* NumPy
+* Matplotlib
+* Scikit-learn
+* TensorFlow / Keras
+* Google Colab
+
+## 🤖 Model A — MLP AC Power Prediction
+
+A Multi-Layer Perceptron (MLP) regression model predicts inverter AC power using:
+
+* Irradiation
+* Module temperature
+* Ambient temperature
+* Hour of day
+
+Night-time observations were excluded from the Model A analysis because zero-generation rows dominate the dataset.
+
+### Plant 1 Results
+
+| Metric |  Result |
+| ------ | ------: |
+| MAE    | 26.2533 |
+| R²     |  0.9831 |
+
+## ⚠️ Inverter Fault Detection
+
+The difference between actual and predicted AC power was used to identify under-performing inverters.
+
+### Worst-Performing Inverter
+
+```text
+bvBOhCH3iADSZry
+```
+
+Its results were:
+
+| Metric              |    Value |
+| ------------------- | -------: |
+| Mean Error          | -34.9204 |
+| Mean Absolute Error |  40.0287 |
+
+A negative mean error indicates that the inverter generally produced less power than the model expected.
+
+## 📉 Worst Inverter vs Plant Median
+
+The worst-performing inverter was compared with the median AC power of all inverters at each timestamp.
+
+```text
+Worst inverter mean AC power: 526.9991
+Plant median mean AC power:   572.4267
+Mean difference:              -45.4276
+```
+
+This indicates that the selected inverter generated approximately **45.43 AC-power units less than the plant median on average**.
+
+## 🔮 Model B — 1-Hour Plant Forecast
+
+An LSTM model was used to forecast the next **4 × 15-minute steps**, representing one hour of plant-level AC power.
+
+The model used the previous **16 time steps (4 hours)** along with weather and plant power information.
+
+### LSTM vs Persistence
+
+| Model       |    MAE |
+| ----------- | -----: |
+| LSTM        | 0.0559 |
+| Persistence | 0.0622 |
+
+The **LSTM performed better than the persistence baseline**.
+
+## 🔄 Plant 2 Transfer
+
+The MLP trained on Plant 1 was applied to Plant 2 **without retraining** to evaluate whether the learned relationship transferred between plants.
+
+This provides a simple test of model transferability across solar plants.
+
+## 🧠 Autoencoder Anomaly Detection
+
+As a stretch goal, an Autoencoder was trained using:
+
+* Irradiation
+* Module temperature
+* Ambient temperature
+* AC power
+
+The reconstruction error was used as an anomaly score.
+
+### Highest Anomaly Scores
+
+The highest reconstruction error was observed for:
+
+```text
+1BY6WEcLGh8j5v7
+```
+
+The previously identified under-performing inverter:
+
+```text
+bvBOhCH3iADSZry
+```
+
+was also ranked among the highest anomaly scores, providing additional evidence of unusual behaviour.
+
+## 📈 Project Workflow
+
+```text
+Solar Generation + Weather Data
+              ↓
+       Data Preprocessing
+              ↓
+      Daylight Filtering
+              ↓
+       Exploratory Analysis
+              ↓
+     ┌────────┴─────────┐
+     ↓                  ↓
+   MLP Model          LSTM Model
+     ↓                  ↓
+AC Power Prediction   1-Hour Forecast
+     ↓                  ↓
+Fault Detection      Persistence
+     ↓                  ↓
+Inverter Ranking     Comparison
+     ↓
+Plant Median Analysis
+
+              +
+              
+        Autoencoder
+              ↓
+      Reconstruction Error
+              ↓
+       Anomaly Ranking
+```
+
+## 📁 Project Structure
+
+```text
+Solar-Power-Forecasting/
+│
+├── README.md
+├── Solar_Power_Forecasting_and_Fault_Detection.ipynb
+│
+├── Plant_1_Generation_Data.csv
+├── Plant_1_Weather_Sensor_Data.csv
+├── Plant_2_Generation_Data.csv
+└── Plant_2_Weather_Sensor_Data.csv
+```
+
+## 🎯 Key Takeaways
+
+* The MLP achieved strong performance for inverter-level AC power prediction.
+* Prediction errors can be used to identify potentially under-performing inverters.
+* The worst inverter produced substantially less power than the plant median.
+* The LSTM outperformed the persistence baseline for one-hour forecasting.
+* A Plant 1-trained model can be tested for transferability to Plant 2 without retraining.
+* Autoencoder reconstruction error provides an additional method for inverter anomaly detection.
+
+## 👩‍💻 Author
+
+**Garimella Bindu Srivani**
+
+B.Tech Information Technology Student
+Interested in Machine Learning, AI, Data Science, and Full-Stack Development.
 
